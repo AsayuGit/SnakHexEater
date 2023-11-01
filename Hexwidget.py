@@ -133,3 +133,6 @@ class ByteIndexArea(QWidget):
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
         painter.fillRect(event.rect(), Qt.lightGray)
+        painter.setPen(Qt.black)
+        
+        painter.drawText(5, self.height() - self.fontMetrics().height(), self.width(), self.fontMetrics().height(), Qt.AlignLeft, (" ".join(f"{i:02x}" for i in range(0, 16))))
