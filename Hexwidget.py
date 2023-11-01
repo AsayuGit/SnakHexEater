@@ -1,0 +1,135 @@
+from typing import Optional
+from PySide6.QtCore import *
+import PySide6.QtCore
+import PySide6.QtGui
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtNetwork import *
+
+import re
+import PySide6.QtWidgets
+from overrides import override
+
+class Hexwidget(QPlainTextEdit):
+    def __init__(self):
+        super().__init__()
+
+        # Use a Fixed size font
+        self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+        
+        # Can write over existing characters
+        self.setOverwriteMode(True)
+        self.setCurrentCharFormat(QTextCharFormat(QTextFormat()))
+
+        # Connect the signal trigered when the text changes
+        self.textChanged.connect(self.formatText)
+
+        self.lineNumberArea = OffsetArea(self)
+
+        self.blockCountChanged.connect(self.updateLineNumberWidth)
+        self.updateLineNumberWidth()
+
+        self.cursorPositionChanged.connect(self.highlightCurrentOctet)
+
+        self.byteIndexArea = ByteIndexArea(self)
+    
+    def formatText(self):        
+        # Block Signals to avoid recursion
+        self.blockSignals(True)
+        
+        # Ensure the input text is in uppercase
+        text = self.toPlainText().upper()
+        # Remove everything that's not hexadecimal
+        text = re.sub("[^A-F,0-9]", "", text)
+        # Group text by 2
+        text = " ".join(text[i:i+2] for i in range(0, len(text), 2))
+
+        # Wrap test every 16 octet
+        text = "\n".join(text[i:i+48].strip() for i in range(0, len(text), 48))
+
+        # Set the modified text as new content
+        self.setPlainText(text)
+
+        self.moveCursor(QTextCursor.End, QTextCursor.MoveAnchor)
+
+        # Set the cursor back at the end of the line with its enchor to continue editing and without sellecting
+
+        # Turn back the signals on after operation
+        self.blockSignals(False)
+
+    def updateLineNumberWidth(self):
+        # Set the margins Size
+        self.setViewportMargins(50, 50, 0, 0)
+    
+    def highlightCurrentOctet(self):
+        backgroundColor = QColor(Qt.yellow)
+        foregroundColor = QColor(Qt.red)
+
+        selection = QTextEdit.ExtraSelection()
+
+        selection.format.setBackground(backgroundColor)
+        selection.format.setForeground(foregroundColor)
+
+        selection.cursor = self.textCursor()
+        selection.cursor.movePosition(QTextCursor.StartOfWord, QTextCursor.MoveAnchor)
+        selection.cursor.movePosition(QTextCursor.EndOfWord, QTextCursor.KeepAnchor)
+        
+        #selection.format.setProperty(QTextFormat.FullWidthSelection, True)
+
+        self.setExtraSelections([selection])
+
+        '''
+        self.blockSignals(True)
+        self.moveCursor(QTextCursor.StartOfWord, QTextCursor.MoveAnchor)
+        self.blockSignals(False)
+        '''
+
+
+
+class OffsetArea(QWidget): 
+    def __init__(self, parent: Hexwidget):
+        super().__init__(parent)
+        self.hexwidget = parent
+        self.move(0, 50)
+
+    # The widget recommanded size
+    @override
+    def sizeHint(self) -> QSize:
+        return QSize(50, self.hexwidget.height() - 50)
+
+    @override
+    def paintEvent(self, event: QPaintEvent):
+        painter = QPainter(self)
+        painter.fillRect(event.rect(), Qt.lightGray)
+        painter.setPen(Qt.black)
+
+        block = self.hexwidget.firstVisibleBlock()
+
+        # for each line
+        while block.isValid():
+            blockNumber = block.blockNumber()
+
+            # Figure out line boundaries
+            top = round(self.hexwidget.blockBoundingGeometry(block).translated(self.hexwidget.contentOffset()).top()) + 1
+            bottom = top + round(self.hexwidget.blockBoundingRect(block).height())
+
+            # Draw the line offset
+            painter.drawText(0, top, 50, self.fontMetrics().height(), Qt.AlignRight, f"{blockNumber * 16:#04x}")
+
+            # get next line
+            block = block.next()
+
+class ByteIndexArea(QWidget):
+    def __init__(self, parent: Hexwidget):
+        super().__init__(parent)
+        self.hexwidget = parent
+        self.move(50, 0)
+
+    @override
+    def sizeHint(self) -> QSize:
+        return QSize(self.hexwidget.height() - 50, 50)
+    
+    @override
+    def paintEvent(self, event: QPaintEvent):
+        painter = QPainter(self)
+        painter.fillRect(event.rect(), Qt.lightGray)
