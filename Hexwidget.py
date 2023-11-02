@@ -57,6 +57,8 @@ class Hexwidget(QPlainTextEdit):
         # Turn back the signals on after operation
         self.blockSignals(False)
 
+        self.refreshWidgets()
+
     def updateLineNumberWidth(self):
         # Set the margins Size
         self.setViewportMargins(50, 50, 0, 0)
@@ -84,6 +86,8 @@ class Hexwidget(QPlainTextEdit):
         self.blockSignals(False)
         '''
 
+    def refreshWidgets(self):
+        self.lineNumberArea.update()
 
 
 class OffsetArea(QWidget): 
