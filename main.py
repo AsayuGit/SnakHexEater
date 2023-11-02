@@ -5,19 +5,19 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *
 
-from Hexwidget import Hexwidget
+from Hexeditor import Hexeditor
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(1024, 600)
 
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
         layout = QVBoxLayout()
 
-        layout.addWidget(Hexwidget())
+        layout.addWidget(Hexeditor())
 
         central_widget.setLayout(layout)
 
