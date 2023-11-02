@@ -64,21 +64,19 @@ class Hexwidget(QPlainTextEdit):
         self.setViewportMargins(50, 50, 0, 0)
     
     def highlightCurrentOctet(self):
-        backgroundColor = QColor(Qt.yellow)
-        foregroundColor = QColor(Qt.red)
+        lineSelection = QTextEdit.ExtraSelection()
+        lineSelection.format.setBackground(Qt.gray)
+        lineSelection.cursor = self.textCursor()
+        lineSelection.format.setProperty(QTextFormat.FullWidthSelection, True)
 
-        selection = QTextEdit.ExtraSelection()
+        byteSelection = QTextEdit.ExtraSelection()
+        byteSelection.format.setBackground(Qt.yellow)
+        byteSelection.format.setForeground(Qt.red)
+        byteSelection.cursor = self.textCursor()
+        byteSelection.cursor.movePosition(QTextCursor.StartOfWord, QTextCursor.MoveAnchor)
+        byteSelection.cursor.movePosition(QTextCursor.EndOfWord, QTextCursor.KeepAnchor)
 
-        selection.format.setBackground(backgroundColor)
-        selection.format.setForeground(foregroundColor)
-
-        selection.cursor = self.textCursor()
-        selection.cursor.movePosition(QTextCursor.StartOfWord, QTextCursor.MoveAnchor)
-        selection.cursor.movePosition(QTextCursor.EndOfWord, QTextCursor.KeepAnchor)
-        
-        #selection.format.setProperty(QTextFormat.FullWidthSelection, True)
-
-        self.setExtraSelections([selection])
+        self.setExtraSelections([lineSelection, byteSelection])
 
         '''
         self.blockSignals(True)
