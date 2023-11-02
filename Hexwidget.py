@@ -13,6 +13,8 @@ from overrides import override
 class Hexwidget(QPlainTextEdit):
     def __init__(self):
         super().__init__()
+        
+        self.marginSize = QSize(40, 20)
 
         # Use a Fixed size font
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
@@ -61,7 +63,7 @@ class Hexwidget(QPlainTextEdit):
 
     def updateLineNumberWidth(self):
         # Set the margins Size
-        self.setViewportMargins(50, 50, 0, 0)
+        self.setViewportMargins(self.marginSize.width(), self.marginSize.height(), 0, 0)
     
     def highlightCurrentOctet(self):
         lineSelection = QTextEdit.ExtraSelection()
@@ -92,12 +94,12 @@ class OffsetArea(QWidget):
     def __init__(self, parent: Hexwidget):
         super().__init__(parent)
         self.hexwidget = parent
-        self.move(0, 50)
+        self.move(0, self.hexwidget.marginSize.height())
 
     # The widget recommanded size
     @override
     def sizeHint(self) -> QSize:
-        return QSize(50, self.hexwidget.height() - 50)
+        return QSize(self.hexwidget.marginSize.width(), self.hexwidget.height() - self.hexwidget.marginSize.height())
 
     @override
     def paintEvent(self, event: QPaintEvent):
@@ -116,7 +118,7 @@ class OffsetArea(QWidget):
             bottom = top + round(self.hexwidget.blockBoundingRect(block).height())
 
             # Draw the line offset
-            painter.drawText(0, top, 50, self.fontMetrics().height(), Qt.AlignRight, f"{blockNumber * 16:#04x}")
+            painter.drawText(0, top, self.hexwidget.marginSize.width(), self.fontMetrics().height(), Qt.AlignRight, f"{blockNumber * 16:#04x}")
 
             # get next line
             block = block.next()
@@ -125,11 +127,11 @@ class ByteIndexArea(QWidget):
     def __init__(self, parent: Hexwidget):
         super().__init__(parent)
         self.hexwidget = parent
-        self.move(50, 0)
+        self.move(self.hexwidget.marginSize.width(), 0)
 
     @override
     def sizeHint(self) -> QSize:
-        return QSize(self.hexwidget.height() - 50, 50)
+        return QSize(self.hexwidget.height() - self.hexwidget.marginSize.width(), self.hexwidget.marginSize.height())
     
     @override
     def paintEvent(self, event: QPaintEvent):
