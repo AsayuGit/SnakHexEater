@@ -6,7 +6,7 @@ from PySide6.QtNetwork import *
 from Hexwidget import Hexwidget
 
 class Hexeditor(QWidget):
-    def __init__(self):
+    def __init__(self, path: str):
         super().__init__()
 
         layout = QHBoxLayout()
@@ -18,3 +18,11 @@ class Hexeditor(QWidget):
         layout.addWidget(self.textarea)
 
         self.setLayout(layout)
+
+        self.loadFile(path)
+
+    def loadFile(self, path: str):
+        file = open(path, "rb")
+        text = file.read()
+
+        print(text)
