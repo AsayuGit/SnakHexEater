@@ -3,6 +3,7 @@ import PySide6.QtGui
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *
+import re
 
 class Textwidget(QPlainTextEdit):
     def __init__(self, data: bytes):
@@ -15,7 +16,8 @@ class Textwidget(QPlainTextEdit):
         self.textChanged.connect(self.formatText)
         self.cursorPositionChanged.connect(self.highlightCurrentChar)
 
-        self.setPlainText(data.decode("ascii").replace("\n", ".").replace("\t", "."))
+        text = re.sub(r'[^a-zA-Z0-9\s]+', '.', data.decode(errors="replace"))
+        self.setPlainText(text)
 
     def formatText(self):
         self.blockSignals(True)

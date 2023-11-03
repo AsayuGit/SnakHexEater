@@ -17,7 +17,8 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout()
 
-        layout.addWidget(Hexeditor("files/file.patch"))
+        layout.addWidget(Hexeditor("files/img.png"))
+        #layout.addWidget(table())
 
         central_widget.setLayout(layout)
 
