@@ -37,6 +37,9 @@ class Hexeditor(QWidget):
         self.textarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.textarea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.hexwidget.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToText)
+        self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
+
         self.setLayout(layout)
 
     def notifyCursorPosToText(self):
@@ -44,6 +47,12 @@ class Hexeditor(QWidget):
     
     def notifyCursorPosToHex(self):
         self.hexwidget.setCursorPos(self.textarea.textCursor().position() * 3)
+
+    def notifyScrollPosToText(self):
+        self.scrollbar.setValue(self.hexwidget.verticalScrollBar().value())
+
+    def notifyScrollPosToHex(self):
+        self.scrollbar.setValue(self.textarea.verticalScrollBar().value())
 
     def scrollWidgets(self):
         self.hexwidget.verticalScrollBar().setSliderPosition(self.scrollbar.value())
