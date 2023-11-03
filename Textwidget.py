@@ -13,6 +13,7 @@ class Textwidget(QPlainTextEdit):
         self.setViewportMargins(0, 20, 0, 0)
         
         self.textChanged.connect(self.formatText)
+        self.cursorPositionChanged.connect(self.highlightCurrentChar)
 
         self.setPlainText(data.decode("ascii").replace("\n", ".").replace("\t", "."))
 
@@ -24,3 +25,18 @@ class Textwidget(QPlainTextEdit):
         self.setPlainText(text)
 
         self.blockSignals(False)
+
+    def highlightCurrentChar(self):
+        lineSelection = QTextEdit.ExtraSelection()
+        lineSelection.format.setBackground(Qt.gray)
+        lineSelection.cursor = self.textCursor()
+        lineSelection.format.setProperty(QTextFormat.FullWidthSelection, True)
+
+        charSelection = QTextEdit.ExtraSelection()
+        charSelection.format.setBackground(Qt.yellow)
+        charSelection.format.setForeground(Qt.red)
+        charSelection.cursor = self.textCursor()
+        charSelection.cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor)
+        charSelection.cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
+
+        self.setExtraSelections([lineSelection, charSelection])
