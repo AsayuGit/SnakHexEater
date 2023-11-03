@@ -40,3 +40,8 @@ class Textwidget(QPlainTextEdit):
         charSelection.cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
 
         self.setExtraSelections([lineSelection, charSelection])
+
+    def setCursorPos(self, pos: QPoint):
+        cursor = self.textCursor()
+        cursor.setPosition(pos, QTextCursor.MoveAnchor)
+        self.setTextCursor(cursor)

@@ -91,6 +91,11 @@ class Hexwidget(QPlainTextEdit):
     def refreshWidgets(self):
         self.lineNumberArea.update()
 
+    def setCursorPos(self, pos: QPoint):
+        cursor = self.textCursor()
+        cursor.setPosition(pos, QTextCursor.MoveAnchor)
+        self.setTextCursor(cursor)
+
 
 class OffsetArea(QWidget): 
     def __init__(self, parent: Hexwidget):

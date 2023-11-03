@@ -18,7 +18,16 @@ class Hexeditor(QWidget):
         self.hexwidget = Hexwidget(text)
         self.textarea = Textwidget(text)
 
+        self.hexwidget.cursorPositionChanged.connect(self.notifyCursorPosToText)
+        self.textarea.cursorPositionChanged.connect(self.notifyCursorPosToHex)
+
         layout.addWidget(self.hexwidget)
         layout.addWidget(self.textarea)
 
         self.setLayout(layout)
+
+    def notifyCursorPosToText(self):
+        self.textarea.setCursorPos(self.hexwidget.textCursor().position() / 3)
+    
+    def notifyCursorPosToHex(self):
+        self.hexwidget.setCursorPos(self.textarea.textCursor().position() * 3)
