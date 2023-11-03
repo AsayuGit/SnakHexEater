@@ -11,7 +11,7 @@ import PySide6.QtWidgets
 from overrides import override
 
 class Hexwidget(QPlainTextEdit):
-    def __init__(self):
+    def __init__(self, data: bytes):
         super().__init__()
         
         self.marginSize = QSize(40, 20)
@@ -34,6 +34,8 @@ class Hexwidget(QPlainTextEdit):
         self.cursorPositionChanged.connect(self.highlightCurrentOctet)
 
         self.byteIndexArea = ByteIndexArea(self)
+
+        self.setPlainText(data.hex())
     
     def formatText(self):        
         # Block Signals to avoid recursion

@@ -4,6 +4,7 @@ from PySide6.QtGui import *
 from PySide6.QtNetwork import *
 
 from Hexwidget import Hexwidget
+from Textwidget import Textwidget
 
 class Hexeditor(QWidget):
     def __init__(self, path: str):
@@ -11,18 +12,13 @@ class Hexeditor(QWidget):
 
         layout = QHBoxLayout()
 
-        self.hexwidget = Hexwidget()
-        self.textarea = QPlainTextEdit()
+        file = open(path, "rb")
+        text = file.read()
+
+        self.hexwidget = Hexwidget(text)
+        self.textarea = Textwidget(text)
 
         layout.addWidget(self.hexwidget)
         layout.addWidget(self.textarea)
 
         self.setLayout(layout)
-
-        self.loadFile(path)
-
-    def loadFile(self, path: str):
-        file = open(path, "rb")
-        text = file.read()
-
-        print(text)
