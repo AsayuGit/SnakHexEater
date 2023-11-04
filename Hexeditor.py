@@ -9,7 +9,9 @@ from Textwidget import Textwidget
 class Hexeditor(QWidget):
     def __init__(self, path: str):
         super().__init__()
-        
+
+        self.filePath = path
+
         # Layouts
         layout = QVBoxLayout()
         topLayout = QHBoxLayout()
@@ -18,6 +20,7 @@ class Hexeditor(QWidget):
         # Initial Setup
         file = open(path, "rb")
         self.data = [b for b in file.read()]
+        file.close()
 
         # Child Widgets
         self.hexwidget = Hexwidget(self)
@@ -49,6 +52,11 @@ class Hexeditor(QWidget):
         layout.addWidget(self.miscTabs)
         self.setLayout(layout)
 
+    def saveData(self):
+        saveFile = open(self.filePath, "wb")
+        saveFile.write(bytearray(self.data))
+        saveFile.close()
+
     def getData(self) -> list:
         return self.data
     
@@ -63,7 +71,6 @@ class Hexeditor(QWidget):
     def notifyCursorPosToText(self):
         row, col = self.hexwidget.getCursorCoordinates()
         self.textarea.setCursorCoordinates(row, col)
-
     
     def notifyCursorPosToHex(self):
         row, col = self.textarea.getCursorCoordinates()

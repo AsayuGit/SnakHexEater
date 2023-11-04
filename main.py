@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(Hexeditor(file), os.path.basename(file))
 
     def doSaveFileAction(self):
-        print("SAVING FILE")
+        self.tabs.currentWidget().saveData()
 
     def doCloseTab(self, id: int):
         self.tabs.removeTab(id)
