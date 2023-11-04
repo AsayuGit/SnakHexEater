@@ -45,7 +45,7 @@ class Hexwidget(EditWidget):
     @override
     def applyInput(self, input, index):
         data = self.dataStore.getData()
-        
+
         if self.editProgress:
             self.dataStore.setData(index, (data[index] & 0xF0) | (input & 0x0F))
             self.editProgress = False
@@ -67,8 +67,12 @@ class Hexwidget(EditWidget):
     
     @override
     def translateInput(self, key: str):
-        if (key.isnumeric()):
+        if key.isnumeric():
             return int(key)
+        elif key.isalpha():
+            value = ord(key.upper()[0]) - 0x41
+            if value < 0 or value > 5: return None
+            return value + 0xA
         else:
             return None
 
