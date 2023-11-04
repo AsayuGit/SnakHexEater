@@ -113,11 +113,19 @@ class EditWidget(QPlainTextEdit):
     def getCursorPos(self):
         return self.cursorRow * self.lineLen + self.cursorCol
     
-    def setCursorPos(self, row, col):
+    def setCursorPos(self, pos):
         pass
 
     def getDataPos(self):
         return math.floor(self.getCursorPos() / self.itemSize)
+    
+    def getCursorCoordinates(self):
+        return (self.cursorRow, math.floor(self.cursorCol / self.itemSize))
+    
+    def setCursorCoordinates(self, row, col):
+        self.cursorRow = row
+        self.cursorCol = col * self.itemSize
+        self.updateCursor()
 
     def toNextLine(self):
         cursor = self.textCursor()

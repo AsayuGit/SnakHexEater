@@ -27,7 +27,7 @@ class Hexwidget(EditWidget):
         self.editProgress = False
 
         # Widget Settings
-        self.marginSize = QSize(40, 20)
+        self.marginSize = QSize(50, 20)
 
         # Child Widgets
         self.lineNumberArea = OffsetArea(self)
@@ -108,17 +108,3 @@ class Hexwidget(EditWidget):
 
     def refreshWidgets(self):
         self.lineNumberArea.update()
-
-    #@override
-    #def getCursorPos(self):
-    #    row = self.textCursor().blockNumber()
-    #    col = math.floor(self.textCursor().positionInBlock() / 3)
-
-    #    return row * self.lineLen + col
-    
-    #@override
-    #def setCursorPos(self, row, col):
-    #    pos = (row * 16 + col) * 3
-    #    cursor = self.textCursor()
-    #    cursor.setPosition(pos, QTextCursor.MoveAnchor)
-    #    self.setTextCursor(cursor)
