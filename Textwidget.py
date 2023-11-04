@@ -16,7 +16,7 @@ class Textwidget(QPlainTextEdit):
         self.textChanged.connect(self.formatText)
         self.cursorPositionChanged.connect(self.highlightCurrentChar)
 
-        text = re.sub(r'[^a-zA-Z0-9\s]+', '.', data.decode(errors="replace"))
+        text = re.sub(r'[^0-9a-zA-Z]+', '.', data.decode("ascii", errors="replace"))
         self.setPlainText(text)
 
     def formatText(self):
@@ -43,7 +43,16 @@ class Textwidget(QPlainTextEdit):
 
         self.setExtraSelections([lineSelection, charSelection])
 
-    def setCursorPos(self, pos: QPoint):
+    def setCursorPos(self, row, col):
+        if col >= 16:
+            col = 15
+
         cursor = self.textCursor()
-        cursor.setPosition(pos, QTextCursor.MoveAnchor)
+        cursor.setPosition(row * 17 + col, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
+
+    def getCursorPos(self) -> (int, int):
+        row = self.textCursor().blockNumber()
+        col = self.textCursor().positionInBlock()
+
+        return (row, col)

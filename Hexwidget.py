@@ -6,6 +6,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *
 
+import math
+
 import re
 import PySide6.QtWidgets
 from overrides import override
@@ -91,10 +93,17 @@ class Hexwidget(QPlainTextEdit):
     def refreshWidgets(self):
         self.lineNumberArea.update()
 
-    def setCursorPos(self, pos: QPoint):
+    def setCursorPos(self, row, col):
+        pos = (row * 16 + col) * 3
         cursor = self.textCursor()
         cursor.setPosition(pos, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
+
+    def getCursorPos(self) -> (int, int):
+        row = self.textCursor().blockNumber()
+        col = math.floor(self.textCursor().positionInBlock() / 3)
+
+        return (row, col)
 
 
 class OffsetArea(QWidget): 
