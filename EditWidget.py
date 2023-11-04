@@ -60,9 +60,12 @@ class EditWidget(QPlainTextEdit):
         else:
             input = self.translateInput(e.text())
             if input is not None:
-                self.data[self.getDataPos()] = input
+                self.applyInput(input, self.getDataPos())
                 self.cursorRight()
                 self.updateText()
+
+    def applyInput(self, input, index):
+        self.data[index] = input
 
     def cursorRight(self):
         # Ensure we're at the start of the next item

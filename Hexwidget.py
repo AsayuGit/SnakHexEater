@@ -23,6 +23,9 @@ class Hexwidget(EditWidget):
     def __init__(self, data: bytes):
         super().__init__(data, 48, 3)
         
+        # Custom Property
+        self.editProgress = False
+
         # Widget Settings
         self.marginSize = QSize(40, 20)
 
@@ -37,6 +40,25 @@ class Hexwidget(EditWidget):
         # Final Setup
         self.updateLineNumberWidth()
         self.refreshWidgets()
+
+    @override
+    def applyInput(self, input, index):
+        if self.editProgress:
+            self.data[index] = (self.data[index] & 0xF0) | (input & 0x0F)
+            self.editProgress = False
+        else:
+            self.data[index] = (input << 4) | (self.data[index] & 0xF)
+            self.editProgress = True
+
+    @override
+    def itemRight(self):
+        self.editProgress = False
+        return super().itemRight()
+    
+    @override
+    def itemLeft(self):
+        self.editProgress = False
+        return super().itemLeft()
     
     @override
     def translateData(self, data: list):
