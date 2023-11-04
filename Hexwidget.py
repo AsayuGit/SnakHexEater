@@ -37,6 +37,7 @@ class Hexwidget(QPlainTextEdit):
         self.updateLineNumberWidth()
 
         self.cursorPositionChanged.connect(self.highlightCurrentOctet)
+        self.verticalScrollBar().valueChanged.connect(self.lineNumberArea.scrollHandler)
 
         self.byteIndexArea = ByteIndexArea(self)
 
@@ -114,6 +115,7 @@ class OffsetArea(QWidget):
         super().__init__(parent)
         self.hexwidget = parent
         self.move(0, self.hexwidget.marginSize.height())
+        self.scrollOffset = 0
 
     # The widget recommanded size
     @override
@@ -129,7 +131,7 @@ class OffsetArea(QWidget):
         block = self.hexwidget.firstVisibleBlock()
 
         # for each line
-        while block.isValid():
+        while block.isValid() and block.isVisible():
             blockNumber = block.blockNumber()
 
             # Figure out line boundaries
@@ -141,6 +143,9 @@ class OffsetArea(QWidget):
 
             # get next line
             block = block.next()
+
+    def scrollHandler(self):
+        self.scroll(0, self.hexwidget.verticalScrollBar().value())
 
 class ByteIndexArea(QWidget):
     def __init__(self, parent: Hexwidget):
