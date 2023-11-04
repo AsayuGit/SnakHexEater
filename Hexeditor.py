@@ -23,6 +23,7 @@ class Hexeditor(QWidget):
         self.textarea.cursorPositionChanged.connect(self.notifyCursorPosToHex)
 
         self.scrollbar.valueChanged.connect(self.scrollWidgets)
+        self.scrollbar.rangeChanged.connect(self.range)
 
         layout.addWidget(self.hexwidget)
         layout.addWidget(self.textarea)
@@ -39,6 +40,9 @@ class Hexeditor(QWidget):
 
         self.hexwidget.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToText)
         self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
+
+        # Ensure the scrollbar is of the right size
+        self.range()
 
         self.setLayout(layout)
 
@@ -57,3 +61,10 @@ class Hexeditor(QWidget):
     def scrollWidgets(self):
         self.hexwidget.verticalScrollBar().setSliderPosition(self.scrollbar.value())
         self.textarea.verticalScrollBar().setSliderPosition(self.scrollbar.value())
+
+    def range(self):
+        max = self.hexwidget.verticalScrollBar().maximum()
+        min = self.hexwidget.verticalScrollBar().minimum()
+
+        self.scrollbar.setMaximum(max)
+        self.scrollbar.setMinimum(min)
