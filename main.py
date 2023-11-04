@@ -17,8 +17,7 @@ class MainWindow(QMainWindow):
 
         layout = QVBoxLayout()
 
-        layout.addWidget(Hexeditor("files/img.png"))
-        #layout.addWidget(table())
+        layout.addWidget(Hexeditor("files/file.txt"))
 
         central_widget.setLayout(layout)
 

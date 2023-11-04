@@ -108,6 +108,10 @@ class Hexwidget(QPlainTextEdit):
         col = math.floor(self.textCursor().positionInBlock() / 3)
 
         return (row, col)
+    
+    @override
+    def keyPressEvent(self, e: QKeyEvent) -> None:
+        print(e)
 
 
 class OffsetArea(QWidget): 
