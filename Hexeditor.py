@@ -10,8 +10,10 @@ class Hexeditor(QWidget):
     def __init__(self, path: str):
         super().__init__()
         
-        # Widget Settings
-        layout = QHBoxLayout()
+        # Layouts
+        layout = QVBoxLayout()
+        topLayout = QHBoxLayout()
+
 
         # Initial Setup
         file = open(path, "rb")
@@ -20,6 +22,9 @@ class Hexeditor(QWidget):
         # Child Widgets
         self.hexwidget = Hexwidget(self)
         self.textarea = Textwidget(self)
+        self.miscTabs = QTabWidget(self)
+        self.miscTabs.addTab(QWidget(), "Temp")
+        self.miscTabs.addTab(QWidget(), "Temp2")
 
         # Widgets Settings
         self.textarea.setCursorCoordinates(0, 0)
@@ -37,8 +42,11 @@ class Hexeditor(QWidget):
         self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
         
         # Layout Setup
-        layout.addWidget(self.hexwidget)
-        layout.addWidget(self.textarea)
+        topLayout.addWidget(self.hexwidget)
+        topLayout.addWidget(self.textarea)
+
+        layout.addLayout(topLayout)
+        layout.addWidget(self.miscTabs)
         self.setLayout(layout)
 
     def getData(self) -> list:

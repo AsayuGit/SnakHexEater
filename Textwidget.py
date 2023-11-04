@@ -10,6 +10,7 @@ from EditWidget import EditWidget
 class Textwidget(EditWidget):
     def __init__(self, dataStore):
         super().__init__(dataStore, 16, 1)
+        self.setFixedWidth(160)
 
     @override
     def translateData(self, data: list) -> str:

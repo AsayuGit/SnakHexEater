@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Application Settings
-        self.setMinimumSize(1280, 600)
+        self.setMinimumSize(750, 1200)
 
         # Widgets
         central_widget = QWidget(self)
@@ -38,6 +38,10 @@ class MainWindow(QMainWindow):
         self.openAction.setToolTip("Open a file from disk")
         self.openAction.triggered.connect(self.doOpenFileAction)
 
+        self.saveAction = QAction("&Save File", self)
+        self.saveAction.setToolTip("Save file to disk")
+        self.saveAction.triggered.connect(self.doSaveFileAction)
+
         self.exitAction = QAction("&Exit", self)
         self.exitAction.setToolTip("Exit the program")
         self.exitAction.triggered.connect(self.doExitAction)
@@ -47,6 +51,7 @@ class MainWindow(QMainWindow):
         
         # Assign menu bar actions
         self.fileMenu.addAction(self.openAction)
+        self.fileMenu.addAction(self.saveAction)
         self.fileMenu.addAction(self.exitAction)
 
         # Layout
@@ -61,6 +66,9 @@ class MainWindow(QMainWindow):
 
     def doFilePicked(self, file: str):
         self.tabs.addTab(Hexeditor(file), os.path.basename(file))
+
+    def doSaveFileAction(self):
+        print("SAVING FILE")
 
     def doCloseTab(self, id: int):
         self.tabs.removeTab(id)
