@@ -19,7 +19,14 @@ class MainWindow(QMainWindow):
         # Widgets
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
+
+        # Menu Bar
+        self.menuBar = QMenuBar()
+        self.fileMenu = self.menuBar.addMenu("&File")
+
+        # Tabs
         self.tabs = QTabWidget()
+        self.tabs.setTabsClosable(True)
 
         # Dialogs
         self.openFileDialog = QFileDialog(self)
@@ -36,9 +43,8 @@ class MainWindow(QMainWindow):
         self.exitAction.setToolTip("Exit the program")
         self.exitAction.triggered.connect(self.doExitAction)
 
-        # Menu Bar
-        self.menuBar = QMenuBar()
-        self.fileMenu = self.menuBar.addMenu("&File")
+        # Tabs actions
+        self.tabs.tabCloseRequested.connect(self.doCloseTab)
         
         # Assign menu bar actions
         self.fileMenu.addAction(self.openAction)
@@ -56,6 +62,9 @@ class MainWindow(QMainWindow):
 
     def doFilePicked(self, file: str):
         self.tabs.addTab(Hexeditor(file), os.path.basename(file))
+
+    def doCloseTab(self, id: int):
+        self.tabs.removeTab(id)
 
     def doExitAction(self):
         exit(0)
