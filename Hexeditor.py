@@ -16,7 +16,6 @@ class Hexeditor(QWidget):
         layout = QVBoxLayout()
         topLayout = QHBoxLayout()
 
-
         # Initial Setup
         file = open(path, "rb")
         self.data = [b for b in file.read()]
@@ -28,6 +27,13 @@ class Hexeditor(QWidget):
         self.miscTabs = QTabWidget(self)
         self.miscTabs.addTab(QWidget(), "Temp")
         self.miscTabs.addTab(QWidget(), "Temp2")
+
+        # Dialogs
+        self.saveFileDialog = QFileDialog(self)
+        self.saveFileDialog.setFileMode(QFileDialog.AnyFile)
+        self.saveFileDialog.setWindowTitle("Save File As...")
+        self.saveFileDialog.setAcceptMode(QFileDialog.AcceptSave)
+        self.saveFileDialog.fileSelected.connect(self.doSaveFileAs)
 
         # Widgets Settings
         self.textarea.setCursorCoordinates(0, 0)
@@ -54,6 +60,14 @@ class Hexeditor(QWidget):
 
     def saveData(self):
         saveFile = open(self.filePath, "wb")
+        saveFile.write(bytearray(self.data))
+        saveFile.close()
+
+    def saveDataAs(self):
+        self.saveFileDialog.open()
+
+    def doSaveFileAs(self, file: str):
+        saveFile = open(file, "wb")
         saveFile.write(bytearray(self.data))
         saveFile.close()
 

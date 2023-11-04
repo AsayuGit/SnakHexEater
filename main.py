@@ -42,6 +42,10 @@ class MainWindow(QMainWindow):
         self.saveAction.setToolTip("Save file to disk")
         self.saveAction.triggered.connect(self.doSaveFileAction)
 
+        self.saveAsAction = QAction("&Save File As", self)
+        self.saveAsAction.setToolTip("Save file to disk at path")
+        self.saveAsAction.triggered.connect(self.doSaveAsFileAction)
+
         self.exitAction = QAction("&Exit", self)
         self.exitAction.setToolTip("Exit the program")
         self.exitAction.triggered.connect(self.doExitAction)
@@ -52,6 +56,7 @@ class MainWindow(QMainWindow):
         # Assign menu bar actions
         self.fileMenu.addAction(self.openAction)
         self.fileMenu.addAction(self.saveAction)
+        self.fileMenu.addAction(self.saveAsAction)
         self.fileMenu.addAction(self.exitAction)
 
         # Layout
@@ -68,7 +73,12 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(Hexeditor(file), os.path.basename(file))
 
     def doSaveFileAction(self):
-        self.tabs.currentWidget().saveData()
+        widget = self.tabs.currentWidget()
+        if widget is not None: widget.saveData()
+
+    def doSaveAsFileAction(self):
+        widget = self.tabs.currentWidget()
+        if widget is not None: widget.saveDataAs()
 
     def doCloseTab(self, id: int):
         self.tabs.removeTab(id)
