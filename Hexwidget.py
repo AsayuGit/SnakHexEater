@@ -20,6 +20,9 @@ class Hexwidget(QPlainTextEdit):
 
         # Use a Fixed size font
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+
+        # Prevent user selections
+        self.setTextInteractionFlags(Qt.TextEditable)
         
         # Can write over existing characters
         self.setOverwriteMode(True)

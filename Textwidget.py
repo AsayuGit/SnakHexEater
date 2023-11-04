@@ -12,6 +12,7 @@ class Textwidget(QPlainTextEdit):
         # Use a Fixed size font
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
         self.setViewportMargins(0, 20, 0, 0)
+        self.setTextInteractionFlags(Qt.TextEditable)
         
         self.textChanged.connect(self.formatText)
         self.cursorPositionChanged.connect(self.highlightCurrentChar)
