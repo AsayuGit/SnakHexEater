@@ -15,11 +15,11 @@ class Hexeditor(QWidget):
 
         # Initial Setup
         file = open(path, "rb")
-        text = file.read()
+        self.data = [b for b in file.read()]
 
         # Child Widgets
-        self.hexwidget = Hexwidget(text)
-        self.textarea = Textwidget(text)
+        self.hexwidget = Hexwidget(self)
+        self.textarea = Textwidget(self)
 
         # Widgets Settings
         self.textarea.setCursorCoordinates(0, 0)
@@ -30,8 +30,9 @@ class Hexeditor(QWidget):
         self.textarea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # Event Connections
-        self.hexwidget.cursorPositionChanged.connect(self.notifyCursorPosToText)
-        self.textarea.cursorPositionChanged.connect(self.notifyCursorPosToHex)
+        self.hexwidget.indexChanged.connect(self.notifyCursorPosToText)
+        self.textarea.indexChanged.connect(self.notifyCursorPosToHex)
+        
         self.hexwidget.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToText)
         self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
         
@@ -40,9 +41,21 @@ class Hexeditor(QWidget):
         layout.addWidget(self.textarea)
         self.setLayout(layout)
 
+    def getData(self) -> list:
+        return self.data
+    
+    def setData(self, index: int, value: int):
+        self.data[index] = value
+        self.refreshWigetsData()
+
+    def refreshWigetsData(self):
+        self.hexwidget.refreshData()
+        self.textarea.refreshData()
+
     def notifyCursorPosToText(self):
         row, col = self.hexwidget.getCursorCoordinates()
         self.textarea.setCursorCoordinates(row, col)
+
     
     def notifyCursorPosToHex(self):
         row, col = self.textarea.getCursorCoordinates()

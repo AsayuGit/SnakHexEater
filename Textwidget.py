@@ -10,8 +10,8 @@ from overrides import override
 from EditWidget import EditWidget
 
 class Textwidget(EditWidget):
-    def __init__(self, data: bytes):
-        super().__init__(data, 16, 1)
+    def __init__(self, dataStore):
+        super().__init__(dataStore, 16, 1)
 
     @override
     def translateData(self, data: list) -> str:
@@ -24,6 +24,17 @@ class Textwidget(EditWidget):
             text += c
 
         return text
+    
+    # TODO: Merge up
+    @override
+    def cursorRight(self):
+        super().cursorRight()
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
+    
+    @override
+    def cursorLeft(self):
+        super().cursorLeft()
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
     
     @override
     def translateInput(self, key: str):

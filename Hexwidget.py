@@ -20,8 +20,8 @@ from ByteIndexArea import ByteIndexArea
 # text = re.sub("[^A-F,0-9]", "", text)
 
 class Hexwidget(EditWidget):
-    def __init__(self, data: bytes):
-        super().__init__(data, 48, 3)
+    def __init__(self, dataStore):
+        super().__init__(dataStore, 48, 3)
         
         # Custom Property
         self.editProgress = False
@@ -36,6 +36,7 @@ class Hexwidget(EditWidget):
         # Event Connections
         self.blockCountChanged.connect(self.updateLineNumberWidth)
         self.verticalScrollBar().valueChanged.connect(self.lineNumberArea.scrollHandler)
+        self.indexChanged.connect(self.clearProgress)
 
         # Final Setup
         self.updateLineNumberWidth()
@@ -43,22 +44,17 @@ class Hexwidget(EditWidget):
 
     @override
     def applyInput(self, input, index):
+        data = self.dataStore.getData()
+        
         if self.editProgress:
-            self.data[index] = (self.data[index] & 0xF0) | (input & 0x0F)
+            self.dataStore.setData(index, (data[index] & 0xF0) | (input & 0x0F))
             self.editProgress = False
         else:
-            self.data[index] = (input << 4) | (self.data[index] & 0xF)
+            self.dataStore.setData(index, (input << 4) | (data[index] & 0xF))
             self.editProgress = True
 
-    @override
-    def itemRight(self):
+    def clearProgress(self):
         self.editProgress = False
-        return super().itemRight()
-    
-    @override
-    def itemLeft(self):
-        self.editProgress = False
-        return super().itemLeft()
     
     @override
     def translateData(self, data: list):

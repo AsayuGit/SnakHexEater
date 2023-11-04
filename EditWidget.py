@@ -11,19 +11,19 @@ from abc import abstractclassmethod
 import math
 
 class EditWidget(QPlainTextEdit):
-    def __init__(self, data: bytes, lineLen: int, itemSize: int):
+    indexChanged = Signal(int, int)
+    
+    def __init__(self, dataStore, lineLen: int, itemSize: int):
         super().__init__()
 
-        # Put the data in a data array
-        self.data = [b for b in data]
+        self.dataStore = dataStore
+        data = dataStore.getData()
+        
         self.lineLen = lineLen
         self.itemSize = itemSize
 
         self.cursorRow = 0
         self.cursorCol = 0
-
-        self.nbOfCols = math.floor(lineLen / itemSize)
-        self.nbOfRows = math.floor(len(data) / self.nbOfCols)
 
         # Widget settings
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont)) # Use a Fixed size font
@@ -33,7 +33,7 @@ class EditWidget(QPlainTextEdit):
         # Envent Connections
         self.cursorPositionChanged.connect(self.cursorPosChanged)
 
-        self.updateText()
+        self.refreshData()
 
     @abstractclassmethod
     def highlightText(self): pass
@@ -65,10 +65,11 @@ class EditWidget(QPlainTextEdit):
             if input is not None:
                 self.applyInput(input, self.getDataPos())
                 self.cursorRight()
-                self.updateText()
+                self.updateCursor()
+                self.refreshData()
 
     def applyInput(self, input, index):
-        self.data[index] = input
+        self.dataStore.setData(index, input)
 
     def itemRight(self):
         # Ensure we're at the start of the next item
@@ -78,12 +79,16 @@ class EditWidget(QPlainTextEdit):
             self.cursorCol = 0
             self.cursorRow += 1
 
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
+
     def itemLeft(self):
         if self.cursorRow > 0 and self.cursorCol <= 0:
             self.cursorCol = self.lineLen - 1
             self.cursorRow -= 1
         elif self.cursorCol > 0:
             self.cursorCol -= self.itemSize
+
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
         # Ensure we're at the start of the previous item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
@@ -109,9 +114,11 @@ class EditWidget(QPlainTextEdit):
     def cursorUp(self):
         if self.cursorRow > 0:
             self.cursorRow -= 1
+            self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
     def cursorDown(self):
         self.cursorRow += 1
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
     def getCursorPos(self):
         return self.cursorRow * self.lineLen + self.cursorCol
@@ -135,13 +142,22 @@ class EditWidget(QPlainTextEdit):
         cursor.movePosition(QTextCursor.NextBlock, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
 
+        self.indexChanged.emit(self.cursorCol, self.cursorRow)
+
     def cursorPosChanged(self):
         linePos = self.textCursor().positionInBlock()
         if linePos >= self.lineLen:
             self.toNextLine()
 
+
+        oldCursorRow = self.cursorRow
+        oldCursorCol = self.cursorCol
+
         self.cursorRow = self.textCursor().blockNumber()
         self.cursorCol = self.textCursor().positionInBlock()
+
+        if (oldCursorRow != self.cursorRow) or (math.floor(oldCursorCol / self.itemSize) != math.floor(self.cursorCol / self.itemSize)):
+            self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
         self.highlightText()
 
@@ -153,8 +169,8 @@ class EditWidget(QPlainTextEdit):
         cursor.setPosition(pos, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
 
-    def updateText(self):
-        text = self.translateData(self.data)
+    def refreshData(self):
+        text = self.translateData(self.dataStore.getData())
         text = self.formatText(text)
         
         self.blockSignals(True)
