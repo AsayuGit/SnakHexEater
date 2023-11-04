@@ -86,6 +86,9 @@ class EditWidget(QPlainTextEdit):
         elif self.cursorCol > 0:
             self.cursorCol -= self.itemSize
 
+        if self.cursorCol < 0:
+            self.cursorCol = 0
+
         self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
         # Ensure we're at the start of the previous item
