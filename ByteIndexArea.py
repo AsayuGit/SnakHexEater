@@ -1,7 +1,4 @@
-from typing import Optional
 from PySide6.QtCore import *
-import PySide6.QtCore
-import PySide6.QtGui
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *

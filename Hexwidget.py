@@ -1,23 +1,12 @@
-from typing import Optional
 from PySide6.QtCore import *
-import PySide6.QtCore
-import PySide6.QtGui
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *
-
-import math
-
-import re
-import PySide6.QtWidgets
 from overrides import override
 
 from EditWidget import EditWidget
 from OffsetArea import OffsetArea
 from ByteIndexArea import ByteIndexArea
-
-# Remove everything that's not hexadecimal
-# text = re.sub("[^A-F,0-9]", "", text)
 
 class Hexwidget(EditWidget):
     def __init__(self, dataStore):
