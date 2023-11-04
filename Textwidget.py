@@ -11,7 +11,7 @@ from EditWidget import EditWidget
 
 class Textwidget(EditWidget):
     def __init__(self, data: bytes):
-        super().__init__(data, 16)
+        super().__init__(data, 16, 1)
 
     @override
     def translateData(self, data: list) -> str:
@@ -24,6 +24,10 @@ class Textwidget(EditWidget):
             text += c
 
         return text
+    
+    @override
+    def translateInput(self, key: str):
+        return ord(key)
 
     @override
     def highlightText(self):

@@ -8,15 +8,20 @@ import re
 from overrides import override
 from abc import abstractclassmethod
 
+import math
+
 class EditWidget(QPlainTextEdit):
-    def __init__(self, data: bytes, lineLen: int):
+    def __init__(self, data: bytes, lineLen: int, itemSize: int):
         super().__init__()
 
         # Put the data in a data array
         self.data = [b for b in data]
         self.lineLen = lineLen
+        self.itemSize = itemSize
         
         # Custom properties
+        self.dataIndex = 0
+
         self.cursorRow = 0
         self.cursorCol = 0
 
@@ -36,6 +41,9 @@ class EditWidget(QPlainTextEdit):
     @abstractclassmethod
     def translateData(self, data: list): pass
 
+    @abstractclassmethod
+    def translateInput(self, key: str): pass
+
     # At each keypress, put the corresponding ascii char in the data array
     # An move the cursor pos
     @override
@@ -47,29 +55,33 @@ class EditWidget(QPlainTextEdit):
             self.cursorDown()
             self.updateCursor()
         elif e.key() == Qt.Key.Key_Left:
-            self.stepbackCursor()
+            self.cursorLeft()
             self.updateCursor()
         elif e.key() == Qt.Key.Key_Right:
-            self.advenceCursor()
+            self.cursorRight()
             self.updateCursor()
         else:
-            self.data[self.getCursorPos()] = ord(e.text())
-            self.advenceCursor()
+            self.data[self.getCursorPos()] = self.translateInput(e.text())
+            self.cursorRight()
             self.updateText()
 
-    def advenceCursor(self):
-        self.cursorCol += 1
+    def cursorRight(self):
+        # Ensure we're at the start of the next item
+        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
 
         if self.cursorCol >= self.lineLen:
             self.cursorCol = 0
             self.cursorRow += 1
     
-    def stepbackCursor(self):
+    def cursorLeft(self):
         if self.cursorRow > 0 and self.cursorCol <= 0:
             self.cursorCol = self.lineLen - 1
             self.cursorRow -= 1
         elif self.cursorCol > 0:
-            self.cursorCol -= 1
+            self.cursorCol -= self.itemSize
+
+        # Ensure we're at the start of the previous item
+        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
 
     def cursorUp(self):
         if self.cursorRow > 0:
@@ -80,6 +92,9 @@ class EditWidget(QPlainTextEdit):
 
     def getCursorPos(self):
         return self.cursorRow * self.lineLen + self.cursorCol
+    
+    def setCursorPos(self, row, col):
+        pass
 
     def toEndOfLine(self):
         cursor = self.textCursor()
@@ -115,11 +130,3 @@ class EditWidget(QPlainTextEdit):
 
     def formatText(self, text):
         return "\n".join(text[i:i + self.lineLen] for i in range(0, len(text), self.lineLen))
-
-    def setCursorPos(self, row, col):
-        if col >= self.lineLen:
-            col = self.lineLen - 1
-
-        cursor = self.textCursor()
-        cursor.setPosition(row * (self.lineLen + 1) + col, QTextCursor.MoveAnchor)
-        self.setTextCursor(cursor)

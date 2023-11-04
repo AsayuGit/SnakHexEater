@@ -9,46 +9,50 @@ from Textwidget import Textwidget
 class Hexeditor(QWidget):
     def __init__(self, path: str):
         super().__init__()
-
+        
+        # Widget Settings
         layout = QHBoxLayout()
 
+        # Initial Setup
         file = open(path, "rb")
         text = file.read()
 
-        #self.hexwidget = Hexwidget(text)
+        # Child Widgets
+        self.hexwidget = Hexwidget(text)
         self.textarea = Textwidget(text)
         self.scrollbar = QScrollBar()
 
-        #self.hexwidget.cursorPositionChanged.connect(self.notifyCursorPosToText)
-        self.textarea.cursorPositionChanged.connect(self.notifyCursorPosToHex)
-
-        self.scrollbar.valueChanged.connect(self.scrollWidgets)
-        self.scrollbar.rangeChanged.connect(self.range)
-
-        #layout.addWidget(self.hexwidget)
-        layout.addWidget(self.textarea)
-        layout.addWidget(self.scrollbar)
-
+        # Widgets Settings
         self.textarea.setCursorPos(0, 0)
-        #self.hexwidget.setCursorPos(0, 0)
+        self.hexwidget.setCursorPos(0, 0)
 
         #self.hexwidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         #self.hexwidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
         self.textarea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.textarea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        # Event Connections
+        #self.hexwidget.cursorPositionChanged.connect(self.notifyCursorPosToText)
+        #self.textarea.cursorPositionChanged.connect(self.notifyCursorPosToHex)
+        self.scrollbar.valueChanged.connect(self.scrollWidgets)
+        self.scrollbar.rangeChanged.connect(self.range)
         #self.hexwidget.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToText)
-        self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
+        #self.textarea.verticalScrollBar().valueChanged.connect(self.notifyScrollPosToHex)
 
+        # Final Setup
         # Ensure the scrollbar is of the right size
         self.range()
-
+        
+        # Layout Setup
+        layout.addWidget(self.hexwidget)
+        layout.addWidget(self.textarea)
+        layout.addWidget(self.scrollbar)
         self.setLayout(layout)
 
     def notifyCursorPosToText(self):
-        row, col = self.hexwidget.getCursorPos()
-        self.textarea.setCursorPos(row, col)
+        # row, col = self.hexwidget.getCursorPos()
+        # self.textarea.setCursorPos(row, col)
+        pass
     
     def notifyCursorPosToHex(self):
         pass
@@ -56,14 +60,17 @@ class Hexeditor(QWidget):
         #self.hexwidget.setCursorPos(row, col)
 
     def notifyScrollPosToText(self):
-        self.scrollbar.setValue(self.hexwidget.verticalScrollBar().value())
+        # self.scrollbar.setValue(self.hexwidget.verticalScrollBar().value())
+        pass
 
     def notifyScrollPosToHex(self):
-        self.scrollbar.setValue(self.textarea.verticalScrollBar().value())
+        #self.scrollbar.setValue(self.textarea.verticalScrollBar().value())
+        pass
 
     def scrollWidgets(self):
-        self.hexwidget.verticalScrollBar().setSliderPosition(self.scrollbar.value())
-        self.textarea.verticalScrollBar().setSliderPosition(self.scrollbar.value())
+        pass
+        #self.hexwidget.verticalScrollBar().setSliderPosition(self.scrollbar.value())
+        #self.textarea.verticalScrollBar().setSliderPosition(self.scrollbar.value())
 
     def range(self):
         #max = self.hexwidget.verticalScrollBar().maximum()

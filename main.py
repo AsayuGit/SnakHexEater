@@ -10,7 +10,7 @@ from Hexeditor import Hexeditor
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setMinimumSize(1024, 600)
+        self.setMinimumSize(1280, 600)
 
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
