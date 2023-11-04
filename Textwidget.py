@@ -17,8 +17,19 @@ class Textwidget(QPlainTextEdit):
         self.textChanged.connect(self.formatText)
         self.cursorPositionChanged.connect(self.highlightCurrentChar)
 
-        text = re.sub(r'[^0-9a-zA-Z]+', '.', data.decode("ascii", errors="replace"))
+        text = self.toASCII(data)
         self.setPlainText(text)
+
+    def toASCII(self, data: bytes) -> str:
+        text = ""
+
+        for b in data:
+            c = chr(b)
+            if b < 0x21 or b > 0x7E:
+                c = '.'
+            text += c
+
+        return text
 
     def formatText(self):
         self.blockSignals(True)
