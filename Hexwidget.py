@@ -49,8 +49,20 @@ class Hexwidget(EditWidget):
     
     @override
     def translateInput(self, key: str):
-        return int(key)
+        if (key.isnumeric()):
+            return int(key)
+        else:
+            return None
 
+    # Maybe merge up
+    @override
+    def cursorPosChanged(self):
+        linePos = self.textCursor().positionInBlock()
+        if (linePos % self.itemSize) == (self.itemSize - 1):
+            self.itemRight()
+            self.updateCursor()
+
+        return super().cursorPosChanged()
 
     @override
     def highlightText(self):

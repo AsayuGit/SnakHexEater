@@ -18,9 +18,6 @@ class EditWidget(QPlainTextEdit):
         self.data = [b for b in data]
         self.lineLen = lineLen
         self.itemSize = itemSize
-        
-        # Custom properties
-        self.dataIndex = 0
 
         self.cursorRow = 0
         self.cursorCol = 0
@@ -55,25 +52,45 @@ class EditWidget(QPlainTextEdit):
             self.cursorDown()
             self.updateCursor()
         elif e.key() == Qt.Key.Key_Left:
-            self.cursorLeft()
+            self.itemLeft()
             self.updateCursor()
         elif e.key() == Qt.Key.Key_Right:
-            self.cursorRight()
+            self.itemRight()
             self.updateCursor()
         else:
-            self.data[self.getCursorPos()] = self.translateInput(e.text())
-            self.cursorRight()
-            self.updateText()
+            input = self.translateInput(e.text())
+            if input is not None:
+                self.data[self.getDataPos()] = input
+                self.cursorRight()
+                self.updateText()
 
     def cursorRight(self):
         # Ensure we're at the start of the next item
-        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
+        self.cursorCol += 1
 
         if self.cursorCol >= self.lineLen:
             self.cursorCol = 0
             self.cursorRow += 1
     
     def cursorLeft(self):
+        if self.cursorRow > 0 and self.cursorCol <= 0:
+            self.cursorCol = self.lineLen - 1
+            self.cursorRow -= 1
+        elif self.cursorCol > 0:
+            self.cursorCol -= 1
+
+        # Ensure we're at the start of the previous item
+        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
+
+    def itemRight(self):
+        # Ensure we're at the start of the next item
+        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
+
+        if self.cursorCol >= self.lineLen:
+            self.cursorCol = 0
+            self.cursorRow += 1
+
+    def itemLeft(self):
         if self.cursorRow > 0 and self.cursorCol <= 0:
             self.cursorCol = self.lineLen - 1
             self.cursorRow -= 1
@@ -96,7 +113,10 @@ class EditWidget(QPlainTextEdit):
     def setCursorPos(self, row, col):
         pass
 
-    def toEndOfLine(self):
+    def getDataPos(self):
+        return math.floor(self.getCursorPos() / self.itemSize)
+
+    def toNextLine(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.NextBlock, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
@@ -104,7 +124,7 @@ class EditWidget(QPlainTextEdit):
     def cursorPosChanged(self):
         linePos = self.textCursor().positionInBlock()
         if linePos >= self.lineLen:
-            self.toEndOfLine()
+            self.toNextLine()
 
         self.cursorRow = self.textCursor().blockNumber()
         self.cursorCol = self.textCursor().positionInBlock()
