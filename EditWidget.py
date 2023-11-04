@@ -22,6 +22,9 @@ class EditWidget(QPlainTextEdit):
         self.cursorRow = 0
         self.cursorCol = 0
 
+        self.nbOfCols = math.floor(lineLen / itemSize)
+        self.nbOfRows = math.floor(len(data) / self.nbOfCols)
+
         # Widget settings
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont)) # Use a Fixed size font
         self.setViewportMargins(0, 20, 0, 0)
@@ -67,24 +70,6 @@ class EditWidget(QPlainTextEdit):
     def applyInput(self, input, index):
         self.data[index] = input
 
-    def cursorRight(self):
-        # Ensure we're at the start of the next item
-        self.cursorCol += 1
-
-        if self.cursorCol >= self.lineLen:
-            self.cursorCol = 0
-            self.cursorRow += 1
-    
-    def cursorLeft(self):
-        if self.cursorRow > 0 and self.cursorCol <= 0:
-            self.cursorCol = self.lineLen - 1
-            self.cursorRow -= 1
-        elif self.cursorCol > 0:
-            self.cursorCol -= 1
-
-        # Ensure we're at the start of the previous item
-        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
-
     def itemRight(self):
         # Ensure we're at the start of the next item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
@@ -99,6 +84,24 @@ class EditWidget(QPlainTextEdit):
             self.cursorRow -= 1
         elif self.cursorCol > 0:
             self.cursorCol -= self.itemSize
+
+        # Ensure we're at the start of the previous item
+        self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
+
+    def cursorRight(self):
+        # Ensure we're at the start of the next item
+        self.cursorCol += 1
+
+        if self.cursorCol >= self.lineLen:
+            self.cursorCol = 0
+            self.cursorRow += 1
+    
+    def cursorLeft(self):
+        if self.cursorRow > 0 and self.cursorCol <= 0:
+            self.cursorCol = self.lineLen - 1
+            self.cursorRow -= 1
+        elif self.cursorCol > 0:
+            self.cursorCol -= 1
 
         # Ensure we're at the start of the previous item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
@@ -145,7 +148,9 @@ class EditWidget(QPlainTextEdit):
     def updateCursor(self):
         cursor = self.textCursor()
         #  + to take in account the \n in the widget text
-        cursor.setPosition(self.getCursorPos() + self.cursorRow, QTextCursor.MoveAnchor)
+        pos = self.getCursorPos() + self.cursorRow
+
+        cursor.setPosition(pos, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
 
     def updateText(self):
