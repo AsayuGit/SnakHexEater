@@ -22,8 +22,6 @@ class Hexeditor(QWidget):
         self.hexwidget = Hexwidget(self)
         self.textarea = Textwidget(self)
         self.miscTabs = QTabWidget(self)
-        self.miscTabs.addTab(QWidget(), "Temp")
-        self.miscTabs.addTab(QWidget(), "Temp2")
 
         # Dialogs
         self.saveFileDialog = QFileDialog(self)

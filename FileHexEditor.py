@@ -9,7 +9,7 @@ class FileHexEditor(Hexeditor):
         self.filePath = path
 
         file = open(path, "rb")
-        self.setData([b for b in file.read()])
+        self.setEditorData([b for b in file.read()])
         file.close()
 
     @override
