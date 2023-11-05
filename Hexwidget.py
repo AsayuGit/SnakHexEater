@@ -31,6 +31,7 @@ class Hexwidget(EditWidget):
         self.updateLineNumberWidth()
         self.refreshWidgets()
 
+    # Apply the input in two passes to be able to write each hex digit of the byte
     @override
     def applyInput(self, input, index):
         data = self.dataStore.getData()
@@ -45,6 +46,7 @@ class Hexwidget(EditWidget):
     def clearProgress(self):
         self.editProgress = False
     
+    # Translate the data to the 0x00 format
     @override
     def translateData(self, data: list):
         text = ""
@@ -54,6 +56,7 @@ class Hexwidget(EditWidget):
 
         return text
     
+    # Parse the input, remove non hex keys and return the proper hex value for each remaning
     @override
     def translateInput(self, key: str):
         if key.isnumeric():
@@ -75,6 +78,7 @@ class Hexwidget(EditWidget):
 
         return super().cursorPosChanged()
 
+    # Highlight the current byte as well as the line
     @override
     def highlightText(self):
         lineSelection = QTextEdit.ExtraSelection()

@@ -9,6 +9,7 @@ from NetworkHexEditor import NetworkHexEditor
 
 import os
 
+# The Main Window of SnakHexEater
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -108,8 +109,9 @@ class MainWindow(QMainWindow):
     def doExitAction(self):
         exit(0)
 
+# Start the Qt application and display the main window
 app = QApplication(sys.argv)
 window = MainWindow()
-window.setWindowTitle("Hexeditor")
+window.setWindowTitle("SnakHexEater")
 window.show()
 app.exec()

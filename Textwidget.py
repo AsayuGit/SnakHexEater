@@ -7,11 +7,14 @@ from overrides import override
 
 from EditWidget import EditWidget
 
+# Displays an ascii representation of the data
+# All special chars are converted to a .
 class Textwidget(EditWidget):
     def __init__(self, dataStore):
         super().__init__(dataStore, 16, 1)
         self.setFixedWidth(160)
 
+    # Convert the bytes to their hex representation, replacing special chars with .
     @override
     def translateData(self, data: list) -> str:
         text = ""
@@ -39,6 +42,7 @@ class Textwidget(EditWidget):
     def translateInput(self, key: str):
         return ord(key)
 
+    # Highlight the char the cursor is on as well as the line
     @override
     def highlightText(self):
         lineSelection = QTextEdit.ExtraSelection()

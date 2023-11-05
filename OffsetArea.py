@@ -8,6 +8,7 @@ from PySide6.QtNetwork import *
 
 from overrides import override
 
+# Displays the hex offsets beside the hexwidget
 class OffsetArea(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
@@ -42,5 +43,6 @@ class OffsetArea(QWidget):
             # get next line
             block = block.next()
 
+    # Scroll the widget with the hexwidget
     def scrollHandler(self):
         self.scroll(0, self.hexwidget.verticalScrollBar().value())

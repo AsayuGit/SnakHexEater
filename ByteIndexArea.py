@@ -4,21 +4,26 @@ from PySide6.QtGui import *
 from PySide6.QtNetwork import *
 
 from overrides import override
+import math
 
+# Displays the byte index atop the Hexwidget
 class ByteIndexArea(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.hexwidget = parent
+        self.nbOfIndexes = math.floor(self.hexwidget.lineLen / self.hexwidget.itemSize)
+
         self.move(self.hexwidget.marginSize.width(), 0)
 
+    # Set the prefered size for the widget
     @override
     def sizeHint(self) -> QSize:
         return QSize(self.hexwidget.height() - self.hexwidget.marginSize.width(), self.hexwidget.marginSize.height())
     
+    # When painting displays each index beside one another
     @override
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
         painter.fillRect(event.rect(), Qt.lightGray)
         painter.setPen(Qt.black)
-        
-        painter.drawText(5, self.height() - self.fontMetrics().height(), self.width(), self.fontMetrics().height(), Qt.AlignLeft, (" ".join(f"{i:02x}" for i in range(0, 16))))
+        painter.drawText(5, self.height() - self.fontMetrics().height(), self.width(), self.fontMetrics().height(), Qt.AlignLeft, (" ".join(f"{i:02x}" for i in range(0, self.nbOfIndexes))))

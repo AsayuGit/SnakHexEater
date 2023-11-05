@@ -10,6 +10,7 @@ from PySide6.QtNetwork import *
 
 from overrides import override
 
+# Opens the Hexeditor with data from a file fetched over http/https
 class NetworkHexEditor(Hexeditor):
     def __init__(self, url: str):
         super().__init__()
@@ -33,15 +34,17 @@ class NetworkHexEditor(Hexeditor):
         self.miscTabs.addTab(self.headerData, "HTTP Header")
         self.miscTabs.addTab(self.requestInfo, "Request Info")
 
+        # Fetch the file from the url
         self.sendRequest(url)
 
-
+    # Process the sending of the request through QNetworkAccessManager
     def sendRequest(self, url: str):
         self.headerData.setRowCount(0)
         self.requestInfo.clear()
         request = QNetworkRequest(QUrl(url))
         self.networkManager.get(request)
 
+    # Handle the response, parses the http header as well as its contents
     def handleResponse(self, reply):
         if reply.error() == QNetworkReply.NoError:
             statusCode = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
@@ -62,6 +65,7 @@ class NetworkHexEditor(Hexeditor):
         else:
             self.requestInfo.appendPlainText("Error: " + reply.errorString())
 
+    # We can't save a file to the network so we just redirect to the "save as" method to save on disk
     @override
     def saveData(self):
         super().saveDataAs()

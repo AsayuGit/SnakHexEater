@@ -13,13 +13,15 @@ class EditWidget(QPlainTextEdit):
     
     def __init__(self, dataStore, lineLen: int, itemSize: int):
         super().__init__()
-
-        self.dataStore = dataStore
-        data = dataStore.getData()
         
+        # The data backend
+        self.dataStore = dataStore
+        
+        # Data representation properties
         self.lineLen = lineLen
         self.itemSize = itemSize
 
+        # Cursor position on its data
         self.cursorRow = 0
         self.cursorCol = 0
 
@@ -33,12 +35,16 @@ class EditWidget(QPlainTextEdit):
 
         self.refreshData()
 
+    # Theses methods are implementation dependant and thus are abstract
+    # This method highlight the octet the cursor is on
     @abstractclassmethod
     def highlightText(self): pass
 
+    # This method convert the data to a format relevant to the implementation
     @abstractclassmethod
     def translateData(self, data: list): pass
 
+    # This method convert the input data from the keyboard to a format relevant to the implementation
     @abstractclassmethod
     def translateInput(self, key: str): pass
 
@@ -69,6 +75,7 @@ class EditWidget(QPlainTextEdit):
     def applyInput(self, input, index):
         self.dataStore.setData(index, input)
 
+    # Move the cursor to the byte on its right
     def itemRight(self):
         # Ensure we're at the start of the next item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
@@ -79,6 +86,7 @@ class EditWidget(QPlainTextEdit):
 
         self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
+    # Move the cursor to the byte on its left
     def itemLeft(self):
         if self.cursorRow > 0 and self.cursorCol <= 0:
             self.cursorCol = self.lineLen - 1
@@ -94,6 +102,7 @@ class EditWidget(QPlainTextEdit):
         # Ensure we're at the start of the previous item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
 
+    # Move the cursor 1 char to the right
     def cursorRight(self):
         # Ensure we're at the start of the next item
         self.cursorCol += 1
@@ -102,6 +111,7 @@ class EditWidget(QPlainTextEdit):
             self.cursorCol = 0
             self.cursorRow += 1
     
+    # Move the cursor 1 char to the left
     def cursorLeft(self):
         if self.cursorRow > 0 and self.cursorCol <= 0:
             self.cursorCol = self.lineLen - 1
@@ -112,11 +122,13 @@ class EditWidget(QPlainTextEdit):
         # Ensure we're at the start of the previous item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize)
 
+    # Move the cursor one line up
     def cursorUp(self):
         if self.cursorRow > 0:
             self.cursorRow -= 1
             self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
+    # Move the cursor one line down
     def cursorDown(self):
         self.cursorRow += 1
         self.indexChanged.emit(self.cursorCol, self.cursorRow)
@@ -130,14 +142,17 @@ class EditWidget(QPlainTextEdit):
     def getDataPos(self):
         return math.floor(self.getCursorPos() / self.itemSize)
     
+    # Returns the cursor absolute coordinates relative to the data
     def getCursorCoordinates(self):
         return (self.cursorRow, math.floor(self.cursorCol / self.itemSize))
     
+    # Set the cursor to absolute cooridnates relative to the data
     def setCursorCoordinates(self, row, col):
         self.cursorRow = row
         self.cursorCol = col * self.itemSize
         self.updateCursor()
 
+    # Put the cursor at the start of the next line
     def toNextLine(self):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.NextBlock, QTextCursor.MoveAnchor)
@@ -145,6 +160,7 @@ class EditWidget(QPlainTextEdit):
 
         self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
+    # Event triggered when the cursor changes position
     def cursorPosChanged(self):
         linePos = self.textCursor().positionInBlock()
         if linePos >= self.lineLen:
@@ -157,11 +173,14 @@ class EditWidget(QPlainTextEdit):
         self.cursorRow = self.textCursor().blockNumber()
         self.cursorCol = self.textCursor().positionInBlock()
 
+        # Only emit the indexChanged signal if we changed byte
+        # Some fomat may take more than one char to display a byte
         if (oldCursorRow != self.cursorRow) or (math.floor(oldCursorCol / self.itemSize) != math.floor(self.cursorCol / self.itemSize)):
             self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
         self.highlightText()
 
+    # Apply the cursor position to the widget's text cursor
     def updateCursor(self):
         cursor = self.textCursor()
         #  + to take in account the \n in the widget text
@@ -170,6 +189,7 @@ class EditWidget(QPlainTextEdit):
         cursor.setPosition(pos, QTextCursor.MoveAnchor)
         self.setTextCursor(cursor)
 
+    # Refresh the data of the widget
     def refreshData(self):
         text = self.translateData(self.dataStore.getData())
         text = self.formatText(text)
@@ -181,5 +201,6 @@ class EditWidget(QPlainTextEdit):
         self.updateCursor()
         self.highlightText()
 
+    # This method format the text in lines of lineLen
     def formatText(self, text):
         return "\n".join(text[i:i + self.lineLen] for i in range(0, len(text), self.lineLen))

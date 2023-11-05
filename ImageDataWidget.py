@@ -8,6 +8,7 @@ from PIL import ExifTags
 import io
 import json
 
+# When loaded attemps to parse and display a image's exif data
 class ImageDataWidget(QWidget):
     def __init__(self, imageData: bytes):
         super().__init__()
@@ -53,6 +54,7 @@ class ImageDataWidget(QWidget):
 
         self.exifData = exif
 
+    # Loads the exif data from an image
     def loadExif(self, data: bytes) -> dict:
         image = Image.open(io.BytesIO(data))
 
@@ -64,6 +66,7 @@ class ImageDataWidget(QWidget):
 
         return exif
 
+    # Apply an exif dictionary to the exifTable
     def setExif(self, exif: dict):
         for key, value in exif.items():
             keyCell = QTableWidgetItem(key)
@@ -73,6 +76,7 @@ class ImageDataWidget(QWidget):
             self.exifTable.setItem(self.exifTable.rowCount() - 1, 0, keyCell)
             self.exifTable.setItem(self.exifTable.rowCount() - 1, 1, valueCell)
 
+    # Save the exif data to disk
     def doSaveExifJsonAction(self):
         self.saveExifJsonDialog.open()
 

@@ -11,8 +11,10 @@ class FileMetadataWidget(QWidget):
     def __init__(self, path: str):
         super().__init__()
 
+        # Layout setup
         layout = QVBoxLayout()
 
+        # Widgets
         self.metadataTable = QTableWidget()
         self.metadataTable.setColumnCount(2)
         self.metadataTable.setHorizontalHeaderLabels(["Metadata", "Value"])
@@ -23,6 +25,7 @@ class FileMetadataWidget(QWidget):
 
         self.setLayout(layout)
 
+        # Loads metadata from the file
         self.loadMetadata(path)
 
     def loadMetadata(self, path: str):
@@ -30,6 +33,7 @@ class FileMetadataWidget(QWidget):
 
         self.metadataTable.setRowCount(0)
 
+        # Assotiate each metadata to its name
         data = {
             "Created": time.ctime(os.path.getctime(path)),
             "Last Modified": time.ctime(os.path.getmtime(path)),
@@ -41,6 +45,7 @@ class FileMetadataWidget(QWidget):
             "Device ID": filestats.st_dev,
         }
 
+        # Then add each value to the metadata table
         for key, value in data.items():
             keyCell = QTableWidgetItem(key)
             valueCell = QTableWidgetItem(str(value))
@@ -49,14 +54,15 @@ class FileMetadataWidget(QWidget):
             self.metadataTable.setItem(self.metadataTable.rowCount() - 1, 0, keyCell)
             self.metadataTable.setItem(self.metadataTable.rowCount() - 1, 1, valueCell)
 
+    # Convert a filesize in Byte to a human readable from up to a Tebibyte
     def byteToHuman(self, size: int) -> str:
         if size < 0x400:
             return f"{size} B"
         elif size < 0x100000:
-            return f"{math.floor(size / 0x400)} KiB"
+            return f"{math.floor(size / 0x400)} KiB" # Kibibyte
         elif size < 0x40000000:
-            return f"{math.floor(size / 0x100000)} MiB"
+            return f"{math.floor(size / 0x100000)} MiB" # Mebibyte
         elif size < 0x1000000000:
-            return f"{math.floor(size / 0x40000000)} GiB"
+            return f"{math.floor(size / 0x40000000)} GiB" # Gibibyte
         else:
-            return f"{math.floor(size / 0x1000000000)} TiB"
+            return f"{math.floor(size / 0x1000000000)} TiB" # Tebibyte

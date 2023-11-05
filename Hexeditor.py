@@ -11,6 +11,7 @@ from abc import abstractclassmethod
 
 import PIL
 
+# The hexeditor widget combines the Hexwidget with the Textwidget to propose a useful hex editor widget
 class Hexeditor(QWidget):
     def __init__(self):
         super().__init__()
@@ -56,11 +57,13 @@ class Hexeditor(QWidget):
         layout.addWidget(self.miscTabs)
         self.setLayout(layout)
 
+    # Sets the hex editor data
     def setEditorData(self, data: bytes):
         self.data = [b for b in data]
         self.refreshWigetsData()
 
         try:
+            # If available then loads its exif data
             self.miscTabs.addTab(ImageDataWidget(data), "EXIF Data")
         except PIL.UnidentifiedImageError:
             pass
@@ -70,13 +73,16 @@ class Hexeditor(QWidget):
     def getData(self) -> list:
         return self.data
 
+    # How to save a file (to itself) is implementation dependant so its an abstract method
     @abstractclassmethod
     def saveData(self):
         pass
 
+    # Save as methods, opens a save file dialog
     def saveDataAs(self):
         self.saveFileDialog.open()
 
+    # ... and is a file is selected write the editor's data to disk under that filename
     def doSaveFileAs(self, file: str):
         saveFile = open(file, "wb")
         saveFile.write(bytearray(self.data))
@@ -86,10 +92,12 @@ class Hexeditor(QWidget):
         self.data[index] = value
         self.refreshWigetsData()
 
+    # If one widget's data is modified then update the other
     def refreshWigetsData(self):
         self.hexwidget.refreshData()
         self.textarea.refreshData()
 
+    # Theses methods allow the Hexwidget and Textwiget to be synced with on another
     def notifyCursorPosToText(self):
         row, col = self.hexwidget.getCursorCoordinates()
         self.textarea.setCursorCoordinates(row, col)
