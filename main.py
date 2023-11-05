@@ -4,7 +4,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtNetwork import *
 
-from Hexeditor import Hexeditor
+from FileHexEditor import FileHexEditor
+from NetworkHexEditor import NetworkHexEditor
 
 import os
 
@@ -86,10 +87,10 @@ class MainWindow(QMainWindow):
         self.openUrlDialog.open()
 
     def doFilePicked(self, file: str):
-        self.tabs.addTab(Hexeditor(file), os.path.basename(file))
+        self.tabs.addTab(FileHexEditor(file), os.path.basename(file))
 
     def doUrlPicked(self, url: str):
-        print("URL is", url)
+        self.tabs.addTab(NetworkHexEditor(url), os.path.basename(url))
 
     def doSaveFileAction(self):
         widget = self.tabs.currentWidget()

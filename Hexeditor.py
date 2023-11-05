@@ -6,20 +6,17 @@ from PySide6.QtNetwork import *
 from Hexwidget import Hexwidget
 from Textwidget import Textwidget
 
+from abc import abstractclassmethod
+
 class Hexeditor(QWidget):
-    def __init__(self, path: str):
+    def __init__(self):
         super().__init__()
 
-        self.filePath = path
+        self.data = []
 
         # Layouts
         layout = QVBoxLayout()
         topLayout = QHBoxLayout()
-
-        # Initial Setup
-        file = open(path, "rb")
-        self.data = [b for b in file.read()]
-        file.close()
 
         # Child Widgets
         self.hexwidget = Hexwidget(self)
@@ -58,10 +55,16 @@ class Hexeditor(QWidget):
         layout.addWidget(self.miscTabs)
         self.setLayout(layout)
 
+    def setEditorData(self, data: list):
+        self.data = data
+        self.refreshWigetsData()
+
+    def getData(self) -> list:
+        return self.data
+
+    @abstractclassmethod
     def saveData(self):
-        saveFile = open(self.filePath, "wb")
-        saveFile.write(bytearray(self.data))
-        saveFile.close()
+        pass
 
     def saveDataAs(self):
         self.saveFileDialog.open()
@@ -70,9 +73,6 @@ class Hexeditor(QWidget):
         saveFile = open(file, "wb")
         saveFile.write(bytearray(self.data))
         saveFile.close()
-
-    def getData(self) -> list:
-        return self.data
     
     def setData(self, index: int, value: int):
         self.data[index] = value
