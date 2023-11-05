@@ -5,8 +5,11 @@ from PySide6.QtNetwork import *
 
 from Hexwidget import Hexwidget
 from Textwidget import Textwidget
+from ImageDataWidget import ImageDataWidget
 
 from abc import abstractclassmethod
+
+import PIL
 
 class Hexeditor(QWidget):
     def __init__(self):
@@ -53,9 +56,14 @@ class Hexeditor(QWidget):
         layout.addWidget(self.miscTabs)
         self.setLayout(layout)
 
-    def setEditorData(self, data: list):
-        self.data = data
+    def setEditorData(self, data: bytes):
+        self.data = [b for b in data]
         self.refreshWigetsData()
+
+        try:
+            self.miscTabs.addTab(ImageDataWidget(data), "EXIF Data")
+        except PIL.UnidentifiedImageError:
+            pass
 
     def getData(self) -> list:
         return self.data

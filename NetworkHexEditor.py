@@ -1,4 +1,5 @@
 # https://raw.githubusercontent.com/AsayuGit/FooCalcRPL/main/src/CalcServer.java
+# https://raw.githubusercontent.com/ianare/exif-samples/master/jpg/Canon_40D.jpg
 
 from Hexeditor import Hexeditor
 
@@ -56,7 +57,7 @@ class NetworkHexEditor(Hexeditor):
                 self.headerData.setItem(self.headerData.rowCount() - 1, 1, valueCell)
 
             content = reply.readAll().data()
-            self.setEditorData([b for b in content])
+            self.setEditorData(content)
 
         else:
             self.requestInfo.appendPlainText("Error: " + reply.errorString())
