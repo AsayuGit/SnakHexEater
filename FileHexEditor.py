@@ -2,6 +2,8 @@ from Hexeditor import Hexeditor
 
 from overrides import override
 
+from FileMetadataWidget import FileMetadataWidget
+
 class FileHexEditor(Hexeditor):
     def __init__(self, path: str):
         super().__init__()
@@ -11,6 +13,8 @@ class FileHexEditor(Hexeditor):
         file = open(path, "rb")
         self.setEditorData(file.read())
         file.close()
+
+        self.miscTabs.addTab(FileMetadataWidget(path), "File Metadata")
 
     @override
     def saveData(self):
