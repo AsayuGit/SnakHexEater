@@ -64,6 +64,8 @@ class Hexeditor(QWidget):
             self.miscTabs.addTab(ImageDataWidget(data), "EXIF Data")
         except PIL.UnidentifiedImageError:
             pass
+        except ValueError:
+            pass
 
     def getData(self) -> list:
         return self.data

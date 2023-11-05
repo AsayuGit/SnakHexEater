@@ -47,6 +47,8 @@ class ImageDataWidget(QWidget):
         self.setLayout(layout)
 
         exif = self.loadExif(imageData)
+        if exif == {}:
+            raise ValueError
         self.setExif(exif)
 
         self.exifData = exif
