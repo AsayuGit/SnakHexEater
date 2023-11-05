@@ -87,9 +87,11 @@ class MainWindow(QMainWindow):
         self.openUrlDialog.open()
 
     def doFilePicked(self, file: str):
+        file = file.strip()
         self.tabs.addTab(FileHexEditor(file), os.path.basename(file))
 
     def doUrlPicked(self, url: str):
+        url = url.strip()
         self.tabs.addTab(NetworkHexEditor(url), os.path.basename(url))
 
     def doSaveFileAction(self):
