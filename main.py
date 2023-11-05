@@ -33,10 +33,22 @@ class MainWindow(QMainWindow):
         self.openFileDialog.setWindowTitle("Open File...")
         self.openFileDialog.fileSelected.connect(self.doFilePicked)
 
+        self.openUrlDialog = QInputDialog(self)
+        self.openUrlDialog.setWindowTitle("Open remote file...")
+        self.openUrlDialog.setInputMode(QInputDialog.TextInput)
+        self.openUrlDialog.setLabelText("URL:")
+        self.openUrlDialog.setTextValue("http://")
+        self.openUrlDialog.resize(500, 100)
+        self.openUrlDialog.textValueSelected.connect(self.doUrlPicked)
+
         # Menu Bar Actions
         self.openAction = QAction("&Open File", self)
         self.openAction.setToolTip("Open a file from disk")
         self.openAction.triggered.connect(self.doOpenFileAction)
+
+        self.openUrlAction = QAction("Open &Remote File", self)
+        self.openUrlAction.setToolTip("Open a file from an URL")
+        self.openUrlAction.triggered.connect(self.doOpenUrlAction)
 
         self.saveAction = QAction("&Save File", self)
         self.saveAction.setToolTip("Save file to disk")
@@ -55,6 +67,7 @@ class MainWindow(QMainWindow):
         
         # Assign menu bar actions
         self.fileMenu.addAction(self.openAction)
+        self.fileMenu.addAction(self.openUrlAction)
         self.fileMenu.addAction(self.saveAction)
         self.fileMenu.addAction(self.saveAsAction)
         self.fileMenu.addAction(self.exitAction)
@@ -69,8 +82,14 @@ class MainWindow(QMainWindow):
     def doOpenFileAction(self):
         self.openFileDialog.open()
 
+    def doOpenUrlAction(self):
+        self.openUrlDialog.open()
+
     def doFilePicked(self, file: str):
         self.tabs.addTab(Hexeditor(file), os.path.basename(file))
+
+    def doUrlPicked(self, url: str):
+        print("URL is", url)
 
     def doSaveFileAction(self):
         widget = self.tabs.currentWidget()
