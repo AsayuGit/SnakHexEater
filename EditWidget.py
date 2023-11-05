@@ -16,6 +16,7 @@ class EditWidget(QPlainTextEdit):
         
         # The data backend
         self.dataStore = dataStore
+        self.data = []
         
         # Data representation properties
         self.lineLen = lineLen
@@ -77,6 +78,9 @@ class EditWidget(QPlainTextEdit):
 
     # Move the cursor to the byte on its right
     def itemRight(self):
+        oldCursorCol = self.cursorCol
+        oldCursorRow = self.cursorRow
+        
         # Ensure we're at the start of the next item
         self.cursorCol = (math.floor(self.cursorCol / self.itemSize) * self.itemSize) + self.itemSize
 
@@ -84,7 +88,11 @@ class EditWidget(QPlainTextEdit):
             self.cursorCol = 0
             self.cursorRow += 1
 
-        self.indexChanged.emit(self.cursorCol, self.cursorRow)
+        if self.getDataPos() > len(self.data) - 1:
+            self.cursorCol = oldCursorCol
+            self.cursorRow = oldCursorRow
+        else: 
+            self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
     # Move the cursor to the byte on its left
     def itemLeft(self):
@@ -130,8 +138,13 @@ class EditWidget(QPlainTextEdit):
 
     # Move the cursor one line down
     def cursorDown(self):
+        oldCursorRow = self.cursorRow
         self.cursorRow += 1
-        self.indexChanged.emit(self.cursorCol, self.cursorRow)
+
+        if self.getDataPos() > len(self.data) - 1:
+            self.cursorRow = oldCursorRow
+        else: 
+            self.indexChanged.emit(self.cursorCol, self.cursorRow)
 
     def getCursorPos(self):
         return self.cursorRow * self.lineLen + self.cursorCol
@@ -191,7 +204,8 @@ class EditWidget(QPlainTextEdit):
 
     # Refresh the data of the widget
     def refreshData(self):
-        text = self.translateData(self.dataStore.getData())
+        self.data = self.dataStore.getData()
+        text = self.translateData(self.data)
         text = self.formatText(text)
         
         self.blockSignals(True)
